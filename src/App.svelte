@@ -59,18 +59,17 @@
       notes: $notes,
       list: $list,
     };
-    
 
     try {
-       await axios.post(
-        "https://655f28d1449b15f23a3a.appwrite.global/",
-        data,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      await axios.post("https://655f28d1449b15f23a3a.appwrite.global/", data, {
+        headers: {
+          "x-appwrite-content-type": "application/json",
+          "x-appwrite-accept": "*.*",
+          "x-appwrite-access-control-allow-origin": "*",
+          "x-appwrite-access-control-allow-methods":
+            "GET,PUT,POST,DELETE,PATCH,OPTIONS",
+        },
+      });
       alert("successful");
     } catch (error) {
       console.error("Error:", error.message);
