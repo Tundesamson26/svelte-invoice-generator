@@ -9,13 +9,6 @@
   import TableForm from "./components/TableForm.svelte";
   import { writable } from "svelte/store";
 
-  import { Client, Functions } from "appwrite";
-
-  const client = new Client()
-    .setEndpoint("https://cloud.appwrite.io/v1")
-    .setProject("invoice-generator-id");
-
-  const functions = new Functions(client);
 
   const name = writable("");
   const address = writable("");
@@ -46,67 +39,6 @@
     showInvoice = !showInvoice;
   };
 
-  // Function to send data to the serverless function
-  const generatePdf = async () => {
-    const data = {
-      name: $name,
-      address: $address,
-      email: $email,
-      phone: $phone,
-      bankName: $bankName,
-      bankAccount: $bankAccount,
-      website: $website,
-      clientName: $clientName,
-      clientAddress: $clientAddress,
-      invoiceNumber: $invoiceNumber,
-      invoiceDate: $invoiceDate,
-      dueDate: $dueDate,
-      notes: $notes,
-      list: $list,
-    };
-
-    try {
-      let response = await functions.createExecution(
-        "pdf-invoice-id",
-        JSON.stringify({
-          data
-        }),
-        false,
-        "/https://655f28d1449b15f23a3a.appwrite.global/",
-        "POST",
-        {
-          "Content-Type": "application/json",
-        }
-      );
-      let pdfString = response.responseBody;
-      let blob = b64toBlob(pdfString, "application/pdf");
-      const blobUrl = URL.createObjectURL(blob);
-      console.log(blobUrl);
-      window.open(blobUrl);
-    } catch (error) {
-      console.error("Error:", error.message);
-    }
-  };
-
-  const b64toBlob = (b64Data, contentType = "", sliceSize = 512) => {
-    const byteCharacters = atob(b64Data);
-    const byteArrays = [];
-
-    for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-      const slice = byteCharacters.slice(offset, offset + sliceSize);
-
-      const byteNumbers = new Array(slice.length);
-      for (let i = 0; i < slice.length; i++) {
-        byteNumbers[i] = slice.charCodeAt(i);
-      }
-
-      const byteArray = new Uint8Array(byteNumbers);
-      byteArrays.push(byteArray);
-    }
-
-    const blob = new Blob(byteArrays, { type: contentType });
-    return blob;
-  };
 </script>
 
 <main
@@ -134,10 +66,7 @@
         class="mt-5 bg-blue-500 py-2 px-8 text-white font-bold shadow border-2 border-blue-500 hover:bg-transparent hover:text-blue-500 transition-all duration-300"
         on:click={togglePreview}>Edit Invoice</button
       >
-      <button
-        class="mt-5 bg-green-500 py-2 px-8 text-white font-bold shadow border-2 border-green-500 hover:bg-transparent hover:text-green-500 transition-all duration-300"
-        on:click={generatePdf}>Generate PDF</button
-      >
+      
     {:else}
       <!-- Show Input Element and Preview Invoice Button -->
       <div class="flex flex-col justify-center">
